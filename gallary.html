@@ -177,19 +177,21 @@
         }
 
         .card {
-    width: 210px;
-    height: 240px;
-    background: transparent; /* <--- THIS IS THE FIX */
-    border-radius: 15px;
-    margin-bottom: 15px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    overflow: hidden;
-    position: relative;
-    transition: transform 0.3s ease;
-
+            position: relative;
+            width: 250px;
+            height: 380px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            transform-origin: center center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
         }
 
         .card:hover {
@@ -453,4 +455,186 @@
         .mirror-effect:before {
             content: '';
             position: absolute;
-            top: 0
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.4) 0%,
+                rgba(255, 255, 255, 0) 50%,
+                rgba(255, 255, 255, 0.1) 100%
+            );
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="color-overlay"></div>
+    <h1 class="main-heading">✨ Gallery of Toppr Sahab Ji ✨</h1>
+    <div class="stars"></div>
+    <div class="gallery-container">
+        <div class="gallery">
+            </div>
+    </div>
+
+    <div class="pookie-btn-container">
+        <button class="pookie-btn">🌸 Pookie 🌸</button>
+    </div>
+
+    <div class="pookie-modal">
+        <div class="pookie-message-container">
+            <div class="mirror-effect"></div>
+            <div class="pookie-decoration pookie-heart1">💕</div>
+            <div class="pookie-decoration pookie-heart2">💗</div>
+            <div class="pookie-decoration pookie-star1">✨</div>
+            <div class="pookie-decoration pookie-star2">✨</div>
+            <div class="pookie-close">×</div>
+            <div class="pookie-message">
+                Toh... dekh li poori site? Kaisi lagi meri yeh "kalaakari"? 🎨Aaj hi tere liye banai hai! Socha simple message se achha, yeh website hi bana doon! 💻✨ Thoda zyada cool hai na?Pata hai main kitna talented hoon! 😉 (Arre, just for fun hai, serious mat ho! Chill kar!)
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const messages = [
+            "Yeh wala confidence chahiye life mein. btw y likha hai uss box m छुट्टे नहीं हैं 550 का नोट चलेगा क्या ?",
+            "School jaane ki khushi chehre pe saaf dikh rahi hai. 🤣🤣",
+            "Rakhi ka asli business toh yahi hai! 💰",
+            "Swag toh bachpan se hai! 😎",
+            "Sachin be like : Bhen, plate bhi kha jaati! 🤣",
+            "Bargain level: God Tier! 🙏😂 btw upper y likha hai ki ये वाला level पूरा करा दो शनि भगवान मैं आज आप के मन्दिर मे गरमागरम कचौड़ी चढाकंगी promise",
+            "Ye photo sirf sachin k face k liye look at him 🤣🤣",
+            "Iss photo p no comments Jab Monday morning school jaana ho... 😑",
+            "Last but not least my Favorite Bas karo, aur kitna ragdoge? 😭"
+        ];
+        const images = [
+            "pic1.jpg",
+            "pic2.jpg",
+            "pic3.jpg",
+            "pic4.jpg",
+            "pic5.jpg",
+            "pic6.jpg",
+            "pic7.jpg",
+            "pic8.jpg",
+            "pic9.jpg"
+        ];
+
+        // Create stars
+        const starsContainer = document.querySelector('.stars');
+        for (let i = 0; i < 150; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.animationDelay = `${Math.random() * 2}s`;
+            starsContainer.appendChild(star);
+        }
+
+        // Create shooting stars periodically
+        setInterval(() => {
+            const shootingStar = document.createElement('div');
+            shootingStar.className = 'shooting-star';
+            shootingStar.style.left = `${Math.random() * 100}%`;
+            shootingStar.style.top = `${Math.random() * 100}%`;
+            starsContainer.appendChild(shootingStar);
+            
+            setTimeout(() => {
+                shootingStar.remove();
+            }, 3000);
+        }, 2000);
+
+        // Create and duplicate gallery cards
+        const gallery = document.querySelector('.gallery');
+    
+        function createCard(index) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="card-number">💝</div>
+                <div class="card-image">
+                    <img src="${images[index % 9]}" alt="Image ${index % 9 + 1}"> 
+                </div>
+                <div class="card-message">${messages[index % 9]}</div> 
+                <button class="like-btn">💖 Love</button>
+            `;
+            
+            const likeBtn = card.querySelector('.like-btn');
+            likeBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                createFloatingHearts(e.clientX, e.clientY);
+            });
+            
+            return card;
+        }
+
+        // Create initial set of cards
+        for (let i = 0; i < 9; i++) {
+            gallery.appendChild(createCard(i));
+        }
+
+        // Create duplicate set for smooth infinite scroll
+        for (let i = 0; i < 9; i++) {
+            gallery.appendChild(createCard(i));
+        }
+
+        function createFloatingHearts(x, y) {
+            for (let i = 0; i < 7; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = '💖';
+                heart.style.left = `${x}px`;
+                heart.style.top = `${y}px`;
+                heart.style.animationDelay = `${i * 0.1}s`;
+                document.body.appendChild(heart);
+
+                setTimeout(() => {
+                    heart.remove();
+                }, 1500);
+            }
+        }
+
+        // Reset scroll position when animation ends
+        gallery.addEventListener('animationend', () => {
+            gallery.style.animation = 'none';
+            gallery.offsetHeight; // Trigger reflow
+            gallery.style.animation = 'scroll 40s linear infinite'; /* <-- Make sure this matches the CSS */
+        });
+
+        // Pookie Button Functionality
+        const pookieBtn = document.querySelector('.pookie-btn');
+        const pookieModal = document.querySelector('.pookie-modal');
+        const pookieClose = document.querySelector('.pookie-close');
+        
+        // Array of cute pookie messages
+        const pookieMessages = [
+            "You’re my favorite distraction, my sweetest motivation, and the reason behind so many of my smiles. 😊 Every little thing about you—your laughter, your warmth, the way you just get me—it all makes my heart do that happy little dance. 🌈✨🥰",
+        ];
+        
+        // Show pookie modal with random message
+        pookieBtn.addEventListener('click', () => {
+            const originalMessage = `Toh... dekh li poori site? Kaisi lagi meri yeh "kalaakari"? 🎨Aaj hi tere liye banai hai! Socha simple message se achha, yeh website hi bana doon! 💻✨ Thoda zyada cool hai na?Pata hai main kitna talented hoon! 😉 (Arre, just for fun hai, serious mat ho! Chill kar!)`;
+            document.querySelector('.pookie-message').innerHTML = originalMessage;
+            
+            pookieModal.classList.add('active');
+            
+            createFloatingHearts(
+                pookieBtn.getBoundingClientRect().left + pookieBtn.offsetWidth/2,
+                pookieBtn.getBoundingClientRect().top
+            );
+        });
+        
+        // Close pookie modal
+        pookieClose.addEventListener('click', () => {
+            pookieModal.classList.remove('active');
+        });
+        
+        // Also close when clicking outside the message
+        pookieModal.addEventListener('click', (e) => {
+            if (e.target === pookieModal) {
+                pookieModal.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
