@@ -60,7 +60,6 @@
             );
         }
 
-        /* Rest of the styles remain the same as before */
         .main-heading {
             font-size: 52px;
             font-family: 'Poppins', cursive;
@@ -158,8 +157,6 @@
             display: flex;
             gap: 30px;
             perspective: 1000px;
-            /* -- CHANGE 1: Animation speed slowed from 20s to 40s --
-            */
             animation: scroll 40s linear infinite;
             padding: 20px;
             width: max-content;
@@ -167,8 +164,6 @@
 
         @keyframes scroll {
             0% { transform: translateX(0); }
-            /* -- CHANGE 2: Animation calculation fixed for 9 cards --
-            */
             100% { transform: translateX(calc(-250px * 9 - 270px)); }
         }
 
@@ -210,7 +205,7 @@
         .card-image {
             width: 210px;
             height: 240px;
-            background: rgba(255, 255, 255, 0.2);
+            background: transparent; /* <-- This was our fix from last time */
             border-radius: 15px;
             margin-bottom: 15px;
             display: flex;
@@ -220,6 +215,7 @@
             overflow: hidden;
             position: relative;
             transition: transform 0.3s ease;
+            cursor: zoom-in; /* <-- Added this to show it's clickable */
         }
 
         .card-image:hover {
@@ -229,9 +225,7 @@
         .card-image img {
             width: 100%;
             height: 100%;
-            /* -- CHANGE 3: Full picture, no cropping --
-            */
-            object-fit: contain; 
+            object-fit: contain; /* <-- This was our fix from last time */
             border-radius: 15px;
         }
 
@@ -439,7 +433,6 @@
             transform: rotate(-10deg);
         }
 
-        /* Mirror effect background */
         .mirror-effect {
             position: absolute;
             top: 0;
@@ -467,6 +460,74 @@
             );
             border-radius: 20px;
         }
+        
+        
+        /* --------------------------------- */
+        /* --- NEW POPUP CSS STARTS HERE --- */
+        /* --------------------------------- */
+        .photo-modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 3000; /* Make sure it's on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85); /* Darker overlay */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .photo-modal.show {
+            display: flex; /* Show the modal */
+        }
+
+        .photo-modal-content {
+            position: relative;
+            background: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            max-width: 90vw; /* Max 90% of viewport width */
+            max-height: 90vh; /* Max 90% of viewport height */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        }
+
+        .close-photo {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            color: #333;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close-photo:hover {
+            color: #ff1493;
+        }
+
+        #modalImage {
+            max-width: 100%;
+            max-height: 70vh; /* Limit image height */
+            object-fit: contain; /* Show full image */
+            border-radius: 5px;
+        }
+
+        #modalMessage {
+            margin-top: 20px;
+            color: #333;
+            font-size: 18px;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            font-style: italic;
+            line-height: 1.5;
+        }
+        /* --- NEW POPUP CSS ENDS HERE --- */
+        
+        
     </style>
 </head>
 <body>
@@ -496,6 +557,14 @@
         </div>
     </div>
 
+    
+    <div id="photoModal" class="photo-modal">
+        <div class="photo-modal-content">
+            <span class="close-photo">&times;</span>
+            <img src="" id="modalImage">
+            <p id="modalMessage"></p>
+        </div>
+    </div>
     <script>
         const messages = [
             "Yeh wala confidence chahiye life mein. btw y likha hai uss box m छुट्टे नहीं हैं 550 का नोट चलेगा क्या ?",
@@ -503,7 +572,7 @@
             "Rakhi ka asli business toh yahi hai! 💰",
             "Swag toh bachpan se hai! 😎",
             "Sachin be like : Bhen, plate bhi kha jaati! 🤣",
-            "Bargain level: God Tier! 🙏😂 btw upper y likha hai ki ये वाला level पूरा करा दो शनि भगवान मैं आज आप के मन्दिर मे गरमागरम कचौड़ी चढाकंगी promise",
+            "Bargain level: God Tier! 🙏😂 btw upper y likha hai ki ये वाला level पूरा करा दो शनि भगवान मैं आज आप के मन्दir मे गरमागरम कचौड़ी चढाकंगी promise",
             "Ye photo sirf sachin k face k liye look at him 🤣🤣",
             "Iss photo p no comments Jab Monday morning school jaana ho... 😑",
             "Last but not least my Favorite Bas karo, aur kitna ragdoge? 😭"
@@ -519,6 +588,14 @@
             "pic8.jpg",
             "pic9.jpg"
         ];
+        
+        // --- NEW POPUP JAVASCRIPT (Getting elements) ---
+        const photoModal = document.getElementById('photoModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalMessage = document.getElementById('modalMessage');
+        const closePhotoBtn = document.querySelector('.close-photo');
+        // --- END NEW POPUP JAVASCRIPT ---
+
 
         // Create stars
         const starsContainer = document.querySelector('.stars');
@@ -550,12 +627,16 @@
         function createCard(index) {
             const card = document.createElement('div');
             card.className = 'card';
+            
+            // We use (index % 9) to get the correct image/message index
+            const itemIndex = index % 9; 
+            
             card.innerHTML = `
                 <div class="card-number">💝</div>
                 <div class="card-image">
-                    <img src="${images[index % 9]}" alt="Image ${index % 9 + 1}"> 
+                    <img src="${images[itemIndex]}" alt="Image ${itemIndex + 1}"> 
                 </div>
-                <div class="card-message">${messages[index % 9]}</div> 
+                <div class="card-message">${messages[itemIndex]}</div> 
                 <button class="like-btn">💖 Love</button>
             `;
             
@@ -564,6 +645,20 @@
                 e.stopPropagation();
                 createFloatingHearts(e.clientX, e.clientY);
             });
+            
+            
+            // --- NEW POPUP JAVASCRIPT (Adding click event) ---
+            const cardImage = card.querySelector('.card-image');
+            cardImage.addEventListener('click', () => {
+                // Set the correct image and message
+                modalImage.src = images[itemIndex];
+                modalMessage.textContent = messages[itemIndex];
+                
+                // Show the modal
+                photoModal.classList.add('show');
+            });
+            // --- END NEW POPUP JAVASCRIPT ---
+            
             
             return card;
         }
@@ -598,7 +693,7 @@
         gallery.addEventListener('animationend', () => {
             gallery.style.animation = 'none';
             gallery.offsetHeight; // Trigger reflow
-            gallery.style.animation = 'scroll 40s linear infinite'; /* <-- Make sure this matches the CSS */
+            gallery.style.animation = 'scroll 40s linear infinite';
         });
 
         // Pookie Button Functionality
@@ -606,12 +701,10 @@
         const pookieModal = document.querySelector('.pookie-modal');
         const pookieClose = document.querySelector('.pookie-close');
         
-        // Array of cute pookie messages
         const pookieMessages = [
             "You’re my favorite distraction, my sweetest motivation, and the reason behind so many of my smiles. 😊 Every little thing about you—your laughter, your warmth, the way you just get me—it all makes my heart do that happy little dance. 🌈✨🥰",
         ];
         
-        // Show pookie modal with random message
         pookieBtn.addEventListener('click', () => {
             const originalMessage = `Toh... dekh li poori site? Kaisi lagi meri yeh "kalaakari"? 🎨Aaj hi tere liye banai hai! Socha simple message se achha, yeh website hi bana doon! 💻✨ Thoda zyada cool hai na?Pata hai main kitna talented hoon! 😉 (Arre, just for fun hai, serious mat ho! Chill kar!)`;
             document.querySelector('.pookie-message').innerHTML = originalMessage;
@@ -624,17 +717,32 @@
             );
         });
         
-        // Close pookie modal
         pookieClose.addEventListener('click', () => {
             pookieModal.classList.remove('active');
         });
         
-        // Also close when clicking outside the message
         pookieModal.addEventListener('click', (e) => {
             if (e.target === pookieModal) {
                 pookieModal.classList.remove('active');
             }
         });
+        
+        
+        // --- NEW POPUP JAVASCRIPT (Closing events) ---
+        
+        // Close when clicking the 'X' button
+        closePhotoBtn.addEventListener('click', () => {
+            photoModal.classList.remove('show');
+        });
+        
+        // Close when clicking on the dark background
+        photoModal.addEventListener('click', (e) => {
+            if (e.target === photoModal) {
+                photoModal.classList.remove('show');
+            }
+        });
+        // --- END NEW POPUP JAVASCRIPT ---
+        
     </script>
 </body>
 </html>
