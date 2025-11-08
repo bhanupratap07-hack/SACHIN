@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -111,11 +110,23 @@
             border: 2px solid rgba(255, 255, 255, 0.2);
             transform: perspective(1000px) rotateX(5deg);
             transition: transform 0.3s ease;
+            /* Added overflow: hidden to contain the rounded image */
+            overflow: hidden; 
         }
 
         .gif-container:hover {
             transform: perspective(1000px) rotateX(0deg) scale(1.02);
         }
+
+        /* --- THIS IS THE NEW CSS I ADDED --- */
+        .gif-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Makes the image fill the box */
+            /* No border-radius needed here, as the parent .gif-container clips it */
+        }
+        /* ---------------------------------- */
+
 
         .button-container {
             display: flex;
@@ -213,13 +224,13 @@
         @keyframes glow {
             0%, 100% {
                 text-shadow: 0 0 15px rgba(255, 255, 255, 0.8),
-                            0 0 25px rgba(255, 20, 147, 0.5),
-                            0 0 35px rgba(255, 20, 147, 0.3);
+                             0 0 25px rgba(255, 20, 147, 0.5),
+                             0 0 35px rgba(255, 20, 147, 0.3);
             }
             50% {
                 text-shadow: 0 0 25px rgba(255, 255, 255, 1),
-                            0 0 35px rgba(255, 20, 147, 0.8),
-                            0 0 45px rgba(255, 20, 147, 0.5);
+                             0 0 35px rgba(255, 20, 147, 0.8),
+                             0 0 45px rgba(255, 20, 147, 0.5);
             }
         }
 
@@ -260,7 +271,7 @@
     <div class="container">
         <h1 class="main-heading">Welcome to Your Gallery</h1>
         <div class="gif-container">
-            <img src="./kiss (1).gif">
+            <img src="https://media1.tenor.com/m/h-YEH_aFk9AAAAAd/happy-friends.gif" alt="Happy Friends Animation">
         </div>
         <div class="button-container">
             <button class="btn" id="colorBtn">Change Color</button>
